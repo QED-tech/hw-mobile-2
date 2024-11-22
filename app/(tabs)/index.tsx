@@ -1,74 +1,110 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { View, FlatList, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
+import { useEffect, useState } from 'react';
+import ListItem from '@/components/ListItem';
+import type { ListItemProps } from '@/components/ListItem';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+type ListItemPropsKey = ListItemProps & {
+  key: string,
+};
+
+const data: ListItemPropsKey[] = [
+  {
+    key: '0',
+    langName: 'Golang',
+    desc: 'Программирую на этом языке около 2-ух лет. Нравится и не нравится одновременно.',
+    imageUrl: 'https://cdn.vectorstock.com/i/1000v/77/94/golang-emblem-blue-gopher-vector-27827794.jpg'
+  },
+  {
+    key: '1',
+    langName: 'PHP',
+    desc: 'Что тут сказать. Кто бы что не говорил, но 80% сайтов написано на php. И это база веб программирования.',
+    imageUrl: 'https://cdn.freebiesupply.com/logos/large/2x/php-1-logo-png-transparent.png'
+  },
+  {
+    key: '2',
+    langName: 'Java',
+    desc: 'Небольшой опыт обучения, но язык с очень обширной стандартной библиотекой, что нравится.',
+    imageUrl: 'https://cdn2.vectorstock.com/i/1000x1000/36/56/java-programming-language-icon-vector-48893656.jpg'
+  },
+];
 
 export default function HomeScreen() {
+  const [refreshing, setRefreshing] = useState(true);
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  const loadUserData = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+  
+      setRefreshing(false);
+    }, 2000);
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <FlatList
+        data={data}
+        renderItem={item => (
+          <ListItem
+            langName={item.item.langName}
+            desc={item.item.desc}
+            imageUrl={item.item.imageUrl}
+          />
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={loadUserData} />
+        }
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    paddingTop: 22,
+    backgroundColor: '#f5f5f5',
+  },
+  itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 15,
+    marginHorizontal: 15,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 15,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  textContainer: {
+    flex: 1,
+  },
+  langName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 5,
+  },
+  desc: {
+    fontSize: 14,
+    color: '#666',
+  },
+  list: {
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
+  refreshControl: {
+    tintColor: '#007AFF', // Цвет индикатора обновления для iOS
   },
 });
